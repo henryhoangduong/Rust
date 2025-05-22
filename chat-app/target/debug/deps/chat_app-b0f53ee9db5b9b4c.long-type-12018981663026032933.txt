@@ -1,0 +1,2 @@
+<AsyncStream<(), {async block@/Users/mac/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/lib.rs:193:9: 193:59}> as Stream>::Item == Event
+EventStream<AsyncStream<(), {async block@/Users/mac/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/lib.rs:193:9: 193:59}>>

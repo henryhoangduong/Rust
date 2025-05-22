@@ -1,0 +1,1 @@
+(rocket::futures::futures_channel::oneshot::Sender<_>, rocket::futures::futures_channel::oneshot::Receiver<_>)
