@@ -1,9 +1,10 @@
 use rocket::{
     Shutdown, State,
     form::Form,
-    response::stream::EventStream,
+    response::stream::{Event, EventStream},
     serde::{Deserialize, Serialize},
-    tokio::{net::unix::pipe::Sender, sync::broadcast::channel},
+    tokio::select,
+    tokio::sync::broadcast::{Sender, channel, error::RecvError},
 };
 #[macro_use]
 extern crate rocket;
@@ -29,16 +30,18 @@ fn post(form: Form<Message>, queue: &State<Sender<Message>>) {
 async fn events(queue: &State<Sender<Message>>, mut end: Shutdown) -> EventStream![] {
     let mut rx = queue.subscribe();
     EventStream! {
-            loop{
-                let msg = select!{
-                    msg = rx.recv()=> match msg{
-    Ok(msg)=>ms;
-    Err(RecvError::Closed) =>break,
-    Err(RecvError::Lagged(_))=>continue;
-                    }
-                }
-            }
+        loop{
+            let msg=select!{
+                msg=rx.recv() => match msg{
+                    Ok(msg)=>msg,
+                    Err(RecvError::Closed)=> break,
+                    Err(RecvError::Lagged(_))=>continue,
+                },
+                _ = &mut end=> break,
+            };
+            yield Event::json(&msg);
         }
+    }
 }
 #[launch]
 fn rocket() -> _ {
